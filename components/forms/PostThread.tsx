@@ -19,8 +19,6 @@ import { z } from "zod";
 
 interface Props {
   userId: string;
-  //   user: UserInfo;
-  //   btnTitle: string;
 }
 
 const PostThread = ({ userId }: Props) => {

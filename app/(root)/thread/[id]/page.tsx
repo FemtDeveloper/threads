@@ -1,9 +1,9 @@
 import { ThreadCard } from "@/components/cards";
+import { Comment } from "@/components/forms";
 import { fetchThreadById } from "@/lib/actions/thread.actions";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { useRouter } from "next/router";
 
 const Page = async ({ params }: { params: { id: string } }) => {
   if (!params.id) return null;
@@ -17,8 +17,6 @@ const Page = async ({ params }: { params: { id: string } }) => {
 
   const thread = await fetchThreadById(params.id);
 
-  console.log({ thread, params });
-
   return (
     <section className="relative">
       <div>
@@ -31,8 +29,31 @@ const Page = async ({ params }: { params: { id: string } }) => {
           community={thread.community}
           createdAt={thread.createdAt}
           comments={thread.children}
-          currentUserId={user?.id || ""}
+          currentUserId={JSON.stringify(userInfo._id)}
         />
+      </div>
+      <div className="mt-7">
+        <Comment
+          threadId={thread._id}
+          currentUserImg={userInfo.image || ""}
+          currentUserId={userInfo.id}
+        />
+      </div>
+      <div className="mt-10">
+        {thread.children.map((childItem: any) => (
+          <ThreadCard
+            key={childItem._id}
+            id={childItem._id}
+            parentId={childItem.parentId}
+            content={childItem.text}
+            author={childItem.author}
+            community={childItem.community}
+            createdAt={childItem.createdAt}
+            comments={childItem.children}
+            currentUserId={JSON.stringify(childItem._id)}
+            isComment
+          />
+        ))}
       </div>
     </section>
   );
